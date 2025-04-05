@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traducteur Alien</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: radial-gradient(ellipse at center, #0b0c1a 0%, #000 100%);
+      color: #00ffcc;
+      text-align: center;
+      padding: 30px;
+    }
+    textarea, input {
+      width: 80%;
+      padding: 10px;
+      margin: 10px auto;
+      display: block;
+      background: #111;
+      color: #0f0;
+      border: 1px solid #0f0;
+      border-radius: 10px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .magic {
+      font-size: 24px;
+      color: #ff00ff;
+      animation: blink 0.5s infinite alternate;
+    }
+    .hint {
+      margin-top: 20px;
+      font-style: italic;
+      color: #999;
+    }
+    @keyframes blink {
+      from { opacity: 1; }
+      to { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Traducteur Alien</h1>
+  <textarea id="message" placeholder="Écris ton message ici..."></textarea>
+  <button onclick="encrypt()">Crypter</button>
+  <button onclick="decrypt()">Décrypter</button>
+  <button onclick="generateRandomAlienMessage()">Crypter un Message Aléatoire</button>
+  <div id="result"></div>
+  <div class="hint">🔒 Astuce : Plus tu cryptes, plus tu te rapproches d’indices cachés... Certains seuils débloquent des surprises !</div>
+
+  <script>
+    const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    const alienMap = {
+      a: '卐', b: '₪', c: 'Ѯ', d: 'Ϟ', e: 'ψ', f: 'ⱷ',
+      g: 'ϟ', h: 'ø', i: 'Ͼ', j: 'Ӝ', k: '҂', l: 'Ϫ',
+      m: 'Ɱ', n: 'Ԓ', o: '҉', p: 'Ͼ', q: 'Ҩ', r: 'Ϭ',
+      s: 'Ϸ', t: 'Ϥ', u: 'ʊ', v: 'Ѵ', w: 'Ѡ', x: 'Ӿ',
+      y: 'Ұ', z: 'ϸ'
+    };
+
+    const reverseMap = Object.fromEntries(
+      Object.entries(alienMap).map(([k, v]) => [v, k])
+    );
+
+    const magicWords = {
+      'skibidi': '☭ SKIBIDI DOM DOM ACTIVÉ ☭',
+      'sigma': '卐 MODE SIGMA ACTIVÉ 卐',
+      'amogus': '☭ SUS DÉTECTÉ 卐',
+      'cryptex': '⧉ LE CODE EST MAINTENANT DÉCRYPTÉ ⧉',
+      'glitch': '⊗ GLITCH DÉTECTÉ ⊗',
+      'neon': '⧉ NEON KRYPTONITE DÉTECTÉ ⧉',
+      'cryptoforce': '⟟ CRYPTOFORCE ENGAGÉ ⟟',
+      'datagate': '⊗ DÉGATAGE DE DONNÉES EN COURS ⊗',
+      'spacetime': '⊛ SPACETIME WARP ENGAGÉ ⊛'
+    };
+
+    let encryptCount = 0;
+    let dictionary = [];
+
+    // Charger le fichier dictionnaire_francais.txt
+    async function loadDictionary() {
+      try {
+        const response = await fetch('texte/dictionnaire_francais.txt');  // Le fichier est dans le dossier texte
+        const text = await response.text();
+        dictionary = text.split('\n').map(word => word.trim().toLowerCase());
+      } catch (error) {
+        alert('Erreur lors du chargement du dictionnaire : ' + error.message);
+      }
+    }
+
+    // Appeler la fonction de chargement dès que la page est chargée
+    loadDictionary();
+
+    function encrypt() {
+      const msg = document.getElementById("message").value.toLowerCase();
+      if (magicWords[msg.trim()]) {
+        document.getElementById("result").innerHTML = `<p class='magic'>${magicWords[msg.trim()]}</p>`;
+        return;
+      }
+      let encrypted = '';
+      for (let char of msg) {
+        if (alienMap[char]) {
+          encrypted += alienMap[char];
+        } else {
+          encrypted += char;
+        }
+      }
+      encryptCount++;
+      checkHints();
+      document.getElementById("result").innerText = encrypted;
+    }
+
+    function decrypt() {
+      const msg = document.getElementById("message").value;
+      let decrypted = '';
+      for (let char of msg) {
+        if (reverseMap[char]) {
+          decrypted += reverseMap[char];
+        } else {
+          decrypted += char;
+        }
+      }
+      document.getElementById("result").innerText = decrypted;
+    }
+
+    function generateRandomAlienMessage() {
+      if (dictionary.length === 0) {
+        alert("Le dictionnaire n'a pas encore été chargé.");
+        return;
+      }
+
+      let length = Math.floor(Math.random() * 15) + 5;
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        const randWord = dictionary[Math.floor(Math.random() * dictionary.length)];
+        for (let char of randWord) {
+          const randSymbol = alienMap[char] || char; // Si le symbole existe dans alienMap, on le remplace, sinon on garde le caractère original
+          result += randSymbol;
+        }
+        result += ' ';  // Ajouter un espace entre chaque mot
+      }
+      document.getElementById("message").value = result.trim(); // Mettre à jour le champ de texte
+    }
+
+    function checkHints() {
+      const hintBox = document.querySelector(".hint");
+      if (encryptCount === 3) {
+        hintBox.innerText = "🧪 Indice débloqué : Le mot 'sus' n'est pas qu'une insulte...";
+      } else if (encryptCount === 7) {
+        hintBox.innerText = "👁️ Indice débloqué : Essaie de deviner le mot préféré d’un sigma fan de toilettes...";
+      } else if (encryptCount === 13) {
+        hintBox.innerText = "🌌 Indice débloqué : Le vrai alien regarde toujours en arrière...";
+      }
+    }
+  </script>
+</body>
+</html>

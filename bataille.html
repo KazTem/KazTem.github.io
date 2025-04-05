@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combat d'Images avec Attaques Visuelles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .battle-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .image-container {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1s ease-in-out, filter 1s ease-in-out;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 40px;
+            z-index: 10;
+            animation: appear 1s forwards, attack 2s forwards;
+        }
+
+        .button-container {
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        /* Animation pour les attaques */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-15px); }
+            50% { transform: translateX(15px); }
+            75% { transform: translateX(-15px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes hit {
+            0% { transform: scale(1); filter: brightness(1); }
+            25% { transform: scale(1.1); filter: brightness(0.8); }
+            50% { transform: scale(1.2); filter: brightness(0.7); }
+            75% { transform: scale(1.1); filter: brightness(0.8); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(2); opacity: 0.5; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        @keyframes appear {
+            0% { opacity: 0; transform: scale(0); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes attack {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(200px); /* Déplacer vers l'autre image */
+                opacity: 0;
+            }
+        }
+
+        @keyframes lightBurst {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(2); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        @keyframes smoke {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(2); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+
+        @keyframes distortion {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Choisissez deux images pour le combat</h1>
+
+    <div class="battle-container">
+        <div class="image-container" id="image1">
+            <img src="https://via.placeholder.com/200" alt="Image 1" id="img1">
+        </div>
+        <div class="image-container" id="image2">
+            <img src="https://via.placeholder.com/200" alt="Image 2" id="img2">
+        </div>
+    </div>
+
+    <div class="button-container">
+        <input type="file" id="file1" accept="image/*" onchange="loadImage(event, 'img1')">
+        <input type="file" id="file2" accept="image/*" onchange="loadImage(event, 'img2')">
+    </div>
+
+    <div class="button-container">
+        <button onclick="startBattle()">Lancer le combat</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        function loadImage(event, imgId) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                document.getElementById(imgId).src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function randomAttack() {
+            const attacks = ['👊', '💥', '💣', '🔫', '⚡', '🔥'];
+            return attacks[Math.floor(Math.random() * attacks.length)];
+        }
+
+        function startBattle() {
+            // Désactiver le bouton pendant le combat
+            document.querySelector("button").disabled = true;
+            document.getElementById("result").textContent = "Le combat commence...";
+
+            let img1 = document.getElementById("img1");
+            let img2 = document.getElementById("img2");
+
+            // Phase 1 : Animation de secousse
+            img1.style.animation = "shake 1s ease-in-out infinite";
+            img2.style.animation = "shake 1s ease-in-out infinite";
+
+            // Créer l'emoji pour l'attaque
+            const emoji1 = document.createElement('div');
+            emoji1.classList.add('emoji');
+            emoji1.innerText = randomAttack();
+            document.getElementById('image1').appendChild(emoji1);
+
+            const emoji2 = document.createElement('div');
+            emoji2.classList.add('emoji');
+            emoji2.innerText = randomAttack();
+            document.getElementById('image2').appendChild(emoji2);
+
+            // Ajout d'effets de lumière et de distorsion
+            const lightEffect1 = document.createElement('div');
+            lightEffect1.classList.add('light-effect');
+            document.getElementById('image1').appendChild(lightEffect1);
+
+            const lightEffect2 = document.createElement('div');
+            lightEffect2.classList.add('light-effect');
+            document.getElementById('image2').appendChild(lightEffect2);
+
+            // Phase 2 : Attaque de l'image 1
+            setTimeout(() => {
+                img1.style.animation = "hit 1s ease-in-out";
+                emoji1.style.animation = "attack 2s forwards"; // Attaque plus lente
+                lightEffect1.style.animation = "lightBurst 1s forwards";
+
+                // Ajout de distorsion
+                img1.style.animation += ", distortion 2s forwards";
+
+                // Attendre la fin de l'attaque de image1 avant de commencer l'attaque de image2
+                setTimeout(() => {
+                    // Phase 3 : Attaque de l'image 2
+                    img2.style.animation = "hit 1s ease-in-out";
+                    emoji2.style.animation = "attack 2s forwards"; // Attaque plus lente
+                    lightEffect2.style.animation = "lightBurst 1s forwards";
+
+                    // Ajout de distorsion sur img2
+                    img2.style.animation += ", distortion 2s forwards";
+                }, 2500); // Attente avant que image2 attaque
+
+            }, 1000); // Attente avant l'attaque de image1
+
+            // Réinitialiser les effets après l'attaque
+            setTimeout(() => {
+                emoji1.remove();
+                emoji2.remove();
+                lightEffect1.remove();
+                lightEffect2.remove();
+
+                // Phase 4 : Explosion / Fin de combat
+                setTimeout(() => {
+                    let winner = Math.random() < 0.5 ? 'Image 1' : 'Image 2';
+                    document.getElementById("result").textContent = `${winner} gagne !`;
+
+                    if (winner === 'Image 2') {
+                        img1.style.animation = "explode 1s forwards";
+                    } else {
+                        img2.style.animation = "explode 1s forwards";
+                    }
+
+                    // Réinitialiser après 2 secondes
+                    setTimeout(() => {
+                        img1.style.animation = '';
+                        img2.style.animation = '';
+                        document.querySelector("button").disabled = false;
+                    }, 2000);
+
+                }, 1000); // Attente avant l'explosion
+
+            }, 5000); // Attendre avant de retirer les emojis et finir
+
+        }
+    </script>
+
+</body>
+</html>

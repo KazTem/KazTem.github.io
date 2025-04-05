@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Générateur Brainrot Mème</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Impact&display=swap');
+
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: #fff;
+      color: black;
+      text-align: center;
+      padding: 2em;
+    }
+
+    h1 {
+      font-family: 'Impact', sans-serif;
+      font-size: 2em;
+      margin-bottom: 2em;
+    }
+
+    .image-wrapper {
+      position: relative;
+      display: inline-block;
+      max-width: 90%;
+    }
+
+    #randomImage {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 16px;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .meme-text {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Impact', sans-serif;
+      font-size: clamp(1.2em, 2.5vw, 1.6em);
+      text-shadow: 2px 2px 0 #000, -2px -2px 0 #000;
+      word-wrap: break-word;
+      padding: 0 10px;
+      color: white;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    button {
+      margin-top: 2em;
+      padding: 14px 28px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 12px;
+      background: #ff33cc;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #c900a8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>GÉNÉRATEUR D'IMAGES</h1>
+
+  <div class="image-wrapper">
+    <img src="images/1.jpg" alt="image aléatoire" id="randomImage">
+    <div class="meme-text" id="mainText"></div>
+  </div>
+
+  <button onclick="generate()">Génerer une image</button>
+
+  <script>
+    const phrases = [
+      "skibidi gyatt toilet en mode ultra sigma dans un tunnel IKEA",
+      "j’ai vendu mon âme pour un kebab froid et 3 V-Bucks",
+      "mon cerveau a pris feu en voyant un giga chad en slip",
+      "je parle au grille-pain depuis qu’il m’a donné un conseil de vie",
+      "je suis dans le bus et quelqu’un vient d’activer le mode boss final",
+      "ta daronne a unlocké le skin ‘maman légendaire’",
+      "le chat m’a appelé ‘brokie’ en miaulant",
+      "j’ai vu un minion de 3m dans mon miroir à 3h du mat",
+      "skibidi toilet m’a donné un cours sur la crypto",
+      "je respire du JPEG et je transpire du PNG",
+      "ma mémoire RAM a crash IRL",
+      "le prof a dit ‘ouvre ton livre’ et j’ai ouvert mon 3e œil",
+      "j’ai perdu un débat contre une frite congelée",
+      "ta meuf rêve de GIGA CHAD... t’es là à jouer à Clash Royale",
+      "je suis coincé dans un mème depuis 2012",
+      "le frigo m'a dit ‘tu veux vraiment encore du fromage ?’",
+      "j’ai ratio Dieu dans les commentaires",
+      "la CIA me traque à cause de mon historique YouTube",
+      "mon reflet a dit ‘nah bro t’es cringe aujourd’hui’",
+      "j’ai téléchargé trop de rizz, mon cerveau lag",
+      "ma conscience est en free trial",
+      "le ciel bug, j’vois des pixels IRL",
+      "je rêve en TikToks inversés",
+      "j’ai parlé à Siri, elle m’a ghost",
+      "je suis passé en mode NPC premium",
+      "j’ai fait un moonwalk mental pendant l’oral d’histoire",
+      "Bro croit qu’il est dans un edit alors qu’il est juste en maths",
+      "t’as l’énergie d’un faux giga sigma sans wifi",
+      "le mec devant moi fait des combos IRL pour acheter une baguette",
+      "un pigeon vient de me traiter de ‘basic’",
+      "j’ai confondu mon rêve avec un mème TikTok… encore",
+      "le vent m’a slap avec une odeur de skibidi",
+      "ma vie est un trailer qui tourne en 144p",
+      "tiktok m’a injecté un vers en plastique dans le cortex",
+      "mon ordi m’a dit ‘ratio’ et s’est éteint",
+      "j’ai débloqué l’émote pleurs IRL",
+      "le prof parle en 240p avec une latence de 2s",
+      "je lag IRL dès que je pense trop fort",
+      "ta soeur m’a dit qu’elle veut être en mode GIGA BOSS",
+      "le rat du coin m’a dit ‘t’es une blague’",
+      "j’ai failli me perdre dans un mème et ma vie est devenue un glitch",
+      "j’ai discuté avec mon écran et il m’a dit ‘t’es sérieux là ?’",
+      "j’ai cru que j’étais dans un film, mais j’étais juste dans un  meme TikTok",
+      "je suis le seul humain à avoir raté un combo IRL",
+      "je viens de parler à mon chat, il m’a dit ‘fais ton ménage’",
+      "mon téléphone m’a dit ‘bro, sérieux ?’",
+      "j’ai vu un truc buggé et je suis sûr que c’est la réalité qui lag",
+      "mon ami m’a dit ‘si tu réussis, je mange mon clavier’ – il mange son clavier",
+      "je crois que je suis coincé dans un TikTok sans fin"
+    ];
+
+    const imageCount = 25;
+
+    function getRandomPhrase() {
+      return phrases[Math.floor(Math.random() * phrases.length)];
+    }
+
+    function generate() {
+      const randomImageIndex = Math.floor(Math.random() * imageCount) + 1;
+      const imageElement = document.getElementById('randomImage');
+      const textElement = document.getElementById('mainText');
+
+      imageElement.style.opacity = 0;
+      setTimeout(() => {
+        imageElement.src = `images/${randomImageIndex}.jpg`;
+        imageElement.onload = () => {
+          imageElement.style.opacity = 1;
+        };
+      }, 200);
+
+      textElement.textContent = getRandomPhrase();
+    }
+  </script>
+<p>Alexandre<p/>
+</body>
+</html>
