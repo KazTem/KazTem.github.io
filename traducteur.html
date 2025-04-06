@@ -46,6 +46,34 @@
       from { opacity: 1; }
       to { opacity: 0.3; }
     }
+    #result {
+      min-height: 2em;
+      font-size: 1.5em;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      transition: filter 0.3s ease;
+    }
+    .temporal-mode {
+      animation: scanlines 2s linear infinite;
+      filter: hue-rotate(90deg) brightness(1.2) contrast(1.5);
+    }
+    @keyframes scanlines {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100%; }
+    }
+    #alien-dictionary {
+      margin-top: 30px;
+      background-color: #111;
+      border: 1px solid #0f0;
+      padding: 20px;
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    #alien-dictionary h3 {
+      margin-bottom: 10px;
+      color: #0f0;
+    }
   </style>
 </head>
 <body>
@@ -55,18 +83,26 @@
   <button onclick="decrypt()">Décrypter</button>
   <button onclick="generateRandomAlienMessage()">Crypter un Message Aléatoire</button>
   <div id="result"></div>
-  <div class="hint">🔒 Astuce : Plus tu cryptes, plus tu te rapproches d’indices cachés...</div>
+  <div class="hint">🔒 Astuce : Plus tu cryptes, plus tu te rapproches d’indices cachés... Certains seuils débloquent des surprises !</div>
+
+  <div id="alien-dictionary">
+    <h3>Dictionnaire Alien 🧬</h3>
+    <ul id="dictionary-list"></ul>
+  </div>
+
+  <audio id="encrypt-sound" src="audio/encrypt.mp3"></audio>
+  <audio id="decrypt-sound" src="audio/decrypt.mp3"></audio>
+  <audio id="glitch-sound" src="audio/glitch.mp3"></audio>
+  <audio id="temporal-sound" src="audio/temporal.mp3"></audio>
 
   <script>
     const alienMap = {
       a: '卐', b: '₪', c: 'Ѯ', d: 'Ϟ', e: 'ψ', f: 'ⱷ',
-      g: 'ϟ', h: 'ø', i: '¡', j: 'Ӝ', k: '҂', l: 'Ϫ',
-      m: 'Ɱ', n: 'Ԓ', o: '҉', p: 'þ', q: 'Ҩ', r: 'Ϭ',
+      g: 'ϟ', h: 'ø', i: 'Ͼ', j: 'Ӝ', k: '҂', l: 'Ϫ',
+      m: 'Ɱ', n: 'Ԓ', o: '҉', p: 'Ͼ', q: 'Ҩ', r: 'Ϭ',
       s: 'Ϸ', t: 'Ϥ', u: 'ʊ', v: 'Ѵ', w: 'Ѡ', x: 'Ӿ',
       y: 'Ұ', z: 'ϸ'
     };
-
-    // Correction : i ≠ p maintenant ('¡' ≠ 'þ')
 
     const reverseMap = Object.fromEntries(
       Object.entries(alienMap).map(([k, v]) => [v, k])
@@ -86,49 +122,94 @@
 
     let encryptCount = 0;
     let dictionary = [];
+    const alienDictionary = new Set();
 
-    async function loadDictionary() {
-      try {
-        const response = await fetch('texte/dictionnaire_francais.txt');
-        const text = await response.text();
-        dictionary = text
-          .split('\n')
-          .map(w => w.trim().toLowerCase())
-          .filter(w => /^[a-z]+$/.test(w));
-      } catch (error) {
-        alert('Erreur lors du chargement du dictionnaire : ' + error.message);
+    // Charger le dictionnaire depuis le localStorage si disponible
+    function loadDictionary() {
+      const savedDictionary = localStorage.getItem('alienDictionary');
+      if (savedDictionary) {
+        const parsedDictionary = JSON.parse(savedDictionary);
+        parsedDictionary.forEach(entry => {
+          alienDictionary.add(entry.alien);
+          const list = document.getElementById("dictionary-list");
+          const li = document.createElement("li");
+          li.classList.add("alien-entry");
+          li.innerHTML = `<span><strong>Alien:</strong> ${entry.alien}</span>
+                          <span><strong>Français:</strong> ${entry.french}</span>
+                          <button onclick="copyToClipboard('${entry.alien}')">Copier en Alien</button>`;
+          list.appendChild(li);
+        });
       }
     }
 
     loadDictionary();
 
+    function playSound(id) {
+      const sound = document.getElementById(id);
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play();
+      }
+    }
+
+    function displayTypingEffect(text) {
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerText = '';
+      let i = 0;
+      const interval = setInterval(() => {
+        resultDiv.innerText += text[i];
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, 50);
+    }
+
+    function updateAlienDictionary(entry, originalText) {
+      if (!alienDictionary.has(entry)) {
+        alienDictionary.add(entry);
+
+        // Sauvegarder le dictionnaire dans le localStorage
+        const dictionaryList = JSON.parse(localStorage.getItem('alienDictionary')) || [];
+        dictionaryList.push({ alien: entry, french: originalText });
+        localStorage.setItem('alienDictionary', JSON.stringify(dictionaryList));
+
+        // Afficher la nouvelle entrée dans le dictionnaire
+        const list = document.getElementById("dictionary-list");
+        const li = document.createElement("li");
+        li.classList.add("alien-entry");
+        li.innerHTML = `<span><strong>Alien:</strong> ${entry}</span>
+                       <span><strong>Français:</strong> ${originalText}</span>
+                       <button onclick="copyToClipboard('${entry}')">Copier en Alien</button>`;
+        list.appendChild(li);
+      }
+    }
+
     function encrypt() {
+      playSound('encrypt-sound');
       const msg = document.getElementById("message").value.toLowerCase();
       if (magicWords[msg.trim()]) {
         document.getElementById("result").innerHTML = `<p class='magic'>${magicWords[msg.trim()]}</p>`;
         return;
       }
       let encrypted = '';
+      let translated = ''; // Variable to store the original French message
       for (let char of msg) {
         encrypted += alienMap[char] || char;
+        translated += char;  // Add the original char for French translation
       }
       encryptCount++;
       checkHints();
-      document.getElementById("result").innerText = encrypted;
+      updateAlienDictionary(encrypted, translated);
+      displayTypingEffect(encrypted);  // Display only the Alien message
     }
 
     function decrypt() {
+      playSound('decrypt-sound');
       const msg = document.getElementById("message").value;
       let decrypted = '';
       for (let char of msg) {
         decrypted += reverseMap[char] || char;
       }
-      document.getElementById("result").innerText = decrypted;
-    }
-
-    function getRandomWord(minLength = 3, maxLength = 8) {
-      const filtered = dictionary.filter(word => word.length >= minLength && word.length <= maxLength);
-      return filtered[Math.floor(Math.random() * filtered.length)];
+      displayTypingEffect(decrypted);
     }
 
     function generateRandomAlienMessage() {
@@ -137,18 +218,31 @@
         return;
       }
 
-      const sujet = getRandomWord();
-      const verbe = getRandomWord();
-      const complement = getRandomWord();
+      const phraseLength = Math.floor(Math.random() * 6) + 3;
+      const randomWords = [];
 
-      const phrase = `${sujet} ${verbe} ${complement}`;
+      while (randomWords.length < phraseLength) {
+        const word = dictionary[Math.floor(Math.random() * dictionary.length)];
+        if (word.length > 2 && word.length < 12) {
+          randomWords.push(word);
+        }
+      }
 
+      const phrase = randomWords.join(' ');
       let encrypted = '';
       for (let char of phrase) {
         encrypted += alienMap[char] || char;
       }
 
+      playSound('encrypt-sound');
       document.getElementById("message").value = encrypted;
+      updateAlienDictionary(encrypted, phrase);
+    }
+
+    function toggleTemporalMode() {
+      const result = document.getElementById("result");
+      result.classList.toggle("temporal-mode");
+      playSound('temporal-sound');
     }
 
     function checkHints() {
@@ -160,6 +254,14 @@
       } else if (encryptCount === 13) {
         hintBox.innerText = "🌌 Indice débloqué : Le vrai alien regarde toujours en arrière...";
       }
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Message copié dans le presse-papiers !');
+      }).catch(err => {
+        alert('Erreur lors de la copie : ' + err);
+      });
     }
   </script>
 
