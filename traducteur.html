@@ -55,17 +55,18 @@
   <button onclick="decrypt()">Décrypter</button>
   <button onclick="generateRandomAlienMessage()">Crypter un Message Aléatoire</button>
   <div id="result"></div>
-  <div class="hint">🔒 Astuce : Plus tu cryptes, plus tu te rapproches d’indices cachés... Certains seuils débloquent des surprises !</div>
+  <div class="hint">🔒 Astuce : Plus tu cryptes, plus tu te rapproches d’indices cachés...</div>
 
   <script>
-    const alphabet = 'abcdefghijklmnopqrstuvwxyz';
     const alienMap = {
       a: '卐', b: '₪', c: 'Ѯ', d: 'Ϟ', e: 'ψ', f: 'ⱷ',
-      g: 'ϟ', h: 'ø', i: 'Ͼ', j: 'Ӝ', k: '҂', l: 'Ϫ',
-      m: 'Ɱ', n: 'Ԓ', o: '҉', p: 'Ͼ', q: 'Ҩ', r: 'Ϭ',
+      g: 'ϟ', h: 'ø', i: '¡', j: 'Ӝ', k: '҂', l: 'Ϫ',
+      m: 'Ɱ', n: 'Ԓ', o: '҉', p: 'þ', q: 'Ҩ', r: 'Ϭ',
       s: 'Ϸ', t: 'Ϥ', u: 'ʊ', v: 'Ѵ', w: 'Ѡ', x: 'Ӿ',
       y: 'Ұ', z: 'ϸ'
     };
+
+    // Correction : i ≠ p maintenant ('¡' ≠ 'þ')
 
     const reverseMap = Object.fromEntries(
       Object.entries(alienMap).map(([k, v]) => [v, k])
@@ -86,18 +87,19 @@
     let encryptCount = 0;
     let dictionary = [];
 
-    // Charger le fichier dictionnaire_francais.txt
     async function loadDictionary() {
       try {
-        const response = await fetch('texte/dictionnaire_francais.txt');  // Le fichier est dans le dossier texte
+        const response = await fetch('texte/dictionnaire_francais.txt');
         const text = await response.text();
-        dictionary = text.split('\n').map(word => word.trim().toLowerCase());
+        dictionary = text
+          .split('\n')
+          .map(w => w.trim().toLowerCase())
+          .filter(w => /^[a-z]+$/.test(w));
       } catch (error) {
         alert('Erreur lors du chargement du dictionnaire : ' + error.message);
       }
     }
 
-    // Appeler la fonction de chargement dès que la page est chargée
     loadDictionary();
 
     function encrypt() {
@@ -108,11 +110,7 @@
       }
       let encrypted = '';
       for (let char of msg) {
-        if (alienMap[char]) {
-          encrypted += alienMap[char];
-        } else {
-          encrypted += char;
-        }
+        encrypted += alienMap[char] || char;
       }
       encryptCount++;
       checkHints();
@@ -123,32 +121,34 @@
       const msg = document.getElementById("message").value;
       let decrypted = '';
       for (let char of msg) {
-        if (reverseMap[char]) {
-          decrypted += reverseMap[char];
-        } else {
-          decrypted += char;
-        }
+        decrypted += reverseMap[char] || char;
       }
       document.getElementById("result").innerText = decrypted;
     }
 
+    function getRandomWord(minLength = 3, maxLength = 8) {
+      const filtered = dictionary.filter(word => word.length >= minLength && word.length <= maxLength);
+      return filtered[Math.floor(Math.random() * filtered.length)];
+    }
+
     function generateRandomAlienMessage() {
-      if (dictionary.length === 0) {
+      if (dictionary.length < 1) {
         alert("Le dictionnaire n'a pas encore été chargé.");
         return;
       }
 
-      let length = Math.floor(Math.random() * 15) + 5;
-      let result = '';
-      for (let i = 0; i < length; i++) {
-        const randWord = dictionary[Math.floor(Math.random() * dictionary.length)];
-        for (let char of randWord) {
-          const randSymbol = alienMap[char] || char; // Si le symbole existe dans alienMap, on le remplace, sinon on garde le caractère original
-          result += randSymbol;
-        }
-        result += ' ';  // Ajouter un espace entre chaque mot
+      const sujet = getRandomWord();
+      const verbe = getRandomWord();
+      const complement = getRandomWord();
+
+      const phrase = `${sujet} ${verbe} ${complement}`;
+
+      let encrypted = '';
+      for (let char of phrase) {
+        encrypted += alienMap[char] || char;
       }
-      document.getElementById("message").value = result.trim(); // Mettre à jour le champ de texte
+
+      document.getElementById("message").value = encrypted;
     }
 
     function checkHints() {
@@ -162,9 +162,9 @@
       }
     }
   </script>
-   <footer>
-        <p>&copy; 2025 Alexandre. Tous droits réservés.</p>
-    </footer>
 
+  <footer>
+    <p>&copy; 2025 Alexandre. Tous droits réservés.</p>
+  </footer>
 </body>
 </html>
