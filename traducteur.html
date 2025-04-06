@@ -82,6 +82,7 @@
   <button onclick="encrypt()">Crypter</button>
   <button onclick="decrypt()">Décrypter</button>
   <button onclick="generateRandomAlienMessage()">Crypter un Message Aléatoire</button>
+  <button onclick="toggleTemporalMode()">Activer/Désactiver Mode Temporel 🌀</button>
   <div id="result"></div>
   <div class="hint">🔒 Astuce : Plus tu cryptes, plus tu te rapproches d’indices cachés... Certains seuils débloquent des surprises !</div>
 
@@ -110,13 +111,14 @@
 
     let encryptCount = 0;
     let dictionary = [];
-    const alienDictionary = new Set();
+    let dictionaryLoaded = false; // Flag to check if the dictionary is loaded
 
     async function loadDictionary() {
       try {
         const response = await fetch('texte/dictionnaire_francais.txt');
         const text = await response.text();
         dictionary = text.split('\n').map(word => word.trim().toLowerCase());
+        dictionaryLoaded = true; // Set the flag to true when loaded
       } catch (error) {
         alert('Erreur lors du chargement du dictionnaire : ' + error.message);
       }
@@ -133,33 +135,30 @@
     }
 
     function updateAlienDictionary(entry, originalText) {
-      if (!alienDictionary.has(entry)) {
-        alienDictionary.add(entry);
-        const list = document.getElementById("dictionary-list");
-        const li = document.createElement("li");
-        li.classList.add("alien-entry");
-        li.innerHTML = `<span><strong>Alien:</strong> ${entry}</span> <span><strong>Français:</strong> ${originalText}</span>
-        <button onclick="copyToClipboard('${entry}')">Copier en Alien</button>`;
-        list.appendChild(li);
-      }
+      const list = document.getElementById("dictionary-list");
+      const li = document.createElement("li");
+      li.classList.add("alien-entry");
+      li.innerHTML = `<span><strong>Alien:</strong> ${entry}</span> <span><strong>Français:</strong> ${originalText}</span>
+      <button onclick="copyToClipboard('${entry}')">Copier en Alien</button>`;
+      list.appendChild(li);
     }
 
     function encrypt() {
       playSound('encrypt-sound');
       const msg = document.getElementById("message").value.toLowerCase();
       let encrypted = '';
-      let translated = ''; // Variable pour stocker le message original en français
+      let translated = '';
 
       for (let char of msg) {
         encrypted += alienMap[char] || char;
-        translated += char;  // Ajoute le caractère original pour la traduction en français
+        translated += char;
       }
 
       encryptCount++;
       document.getElementById("result").innerHTML = `
         <p><strong>Message en Alien :</strong> ${encrypted}</p>
         <p><strong>Message en Français :</strong> ${translated}</p>`;
-      
+
       updateAlienDictionary(encrypted, translated);
     }
 
@@ -174,8 +173,8 @@
     }
 
     function generateRandomAlienMessage() {
-      if (dictionary.length < 1) {
-        alert("Le dictionnaire n'a pas encore été chargé.");
+      if (!dictionaryLoaded) {
+        alert("Le dictionnaire n'a pas encore été chargé. Veuillez patienter.");
         return;
       }
 
@@ -211,6 +210,15 @@
       const result = document.getElementById("result");
       result.classList.toggle("temporal-mode");
       playSound('temporal-sound');
+    }
+
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
     }
   </script>
 
