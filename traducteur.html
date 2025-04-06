@@ -108,37 +108,17 @@
       Object.entries(alienMap).map(([k, v]) => [v, k])
     );
 
-    const magicWords = {
-      'skibidi': '☭ SKIBIDI DOM DOM ACTIVÉ ☭',
-      'sigma': '卐 MODE SIGMA ACTIVÉ 卐',
-      'amogus': '☭ SUS DÉTECTÉ 卐',
-      'cryptex': '⧉ LE CODE EST MAINTENANT DÉCRYPTÉ ⧉',
-      'glitch': '⊗ GLITCH DÉTECTÉ ⊗',
-      'neon': '⧉ NEON KRYPTONITE DÉTECTÉ ⧉',
-      'cryptoforce': '⟟ CRYPTOFORCE ENGAGÉ ⟟',
-      'datagate': '⊗ DÉGATAGE DE DONNÉES EN COURS ⊗',
-      'spacetime': '⊛ SPACETIME WARP ENGAGÉ ⊛'
-    };
-
     let encryptCount = 0;
     let dictionary = [];
     const alienDictionary = new Set();
 
-    // Charger le dictionnaire depuis le localStorage si disponible
-    function loadDictionary() {
-      const savedDictionary = localStorage.getItem('alienDictionary');
-      if (savedDictionary) {
-        const parsedDictionary = JSON.parse(savedDictionary);
-        parsedDictionary.forEach(entry => {
-          alienDictionary.add(entry.alien);
-          const list = document.getElementById("dictionary-list");
-          const li = document.createElement("li");
-          li.classList.add("alien-entry");
-          li.innerHTML = `<span><strong>Alien:</strong> ${entry.alien}</span>
-                          <span><strong>Français:</strong> ${entry.french}</span>
-                          <button onclick="copyToClipboard('${entry.alien}')">Copier en Alien</button>`;
-          list.appendChild(li);
-        });
+    async function loadDictionary() {
+      try {
+        const response = await fetch('texte/dictionnaire_francais.txt');
+        const text = await response.text();
+        dictionary = text.split('\n').map(word => word.trim().toLowerCase());
+      } catch (error) {
+        alert('Erreur lors du chargement du dictionnaire : ' + error.message);
       }
     }
 
@@ -152,33 +132,14 @@
       }
     }
 
-    function displayTypingEffect(text) {
-      const resultDiv = document.getElementById("result");
-      resultDiv.innerText = '';
-      let i = 0;
-      const interval = setInterval(() => {
-        resultDiv.innerText += text[i];
-        i++;
-        if (i >= text.length) clearInterval(interval);
-      }, 50);
-    }
-
     function updateAlienDictionary(entry, originalText) {
       if (!alienDictionary.has(entry)) {
         alienDictionary.add(entry);
-
-        // Sauvegarder le dictionnaire dans le localStorage
-        const dictionaryList = JSON.parse(localStorage.getItem('alienDictionary')) || [];
-        dictionaryList.push({ alien: entry, french: originalText });
-        localStorage.setItem('alienDictionary', JSON.stringify(dictionaryList));
-
-        // Afficher la nouvelle entrée dans le dictionnaire
         const list = document.getElementById("dictionary-list");
         const li = document.createElement("li");
         li.classList.add("alien-entry");
-        li.innerHTML = `<span><strong>Alien:</strong> ${entry}</span>
-                       <span><strong>Français:</strong> ${originalText}</span>
-                       <button onclick="copyToClipboard('${entry}')">Copier en Alien</button>`;
+        li.innerHTML = `<span><strong>Alien:</strong> ${entry}</span> <span><strong>Français:</strong> ${originalText}</span>
+        <button onclick="copyToClipboard('${entry}')">Copier en Alien</button>`;
         list.appendChild(li);
       }
     }
@@ -186,20 +147,20 @@
     function encrypt() {
       playSound('encrypt-sound');
       const msg = document.getElementById("message").value.toLowerCase();
-      if (magicWords[msg.trim()]) {
-        document.getElementById("result").innerHTML = `<p class='magic'>${magicWords[msg.trim()]}</p>`;
-        return;
-      }
       let encrypted = '';
-      let translated = ''; // Variable to store the original French message
+      let translated = ''; // Variable pour stocker le message original en français
+
       for (let char of msg) {
         encrypted += alienMap[char] || char;
-        translated += char;  // Add the original char for French translation
+        translated += char;  // Ajoute le caractère original pour la traduction en français
       }
+
       encryptCount++;
-      checkHints();
+      document.getElementById("result").innerHTML = `
+        <p><strong>Message en Alien :</strong> ${encrypted}</p>
+        <p><strong>Message en Français :</strong> ${translated}</p>`;
+      
       updateAlienDictionary(encrypted, translated);
-      displayTypingEffect(encrypted);  // Display only the Alien message
     }
 
     function decrypt() {
@@ -209,7 +170,7 @@
       for (let char of msg) {
         decrypted += reverseMap[char] || char;
       }
-      displayTypingEffect(decrypted);
+      document.getElementById("result").innerText = decrypted;
     }
 
     function generateRandomAlienMessage() {
@@ -230,38 +191,26 @@
 
       const phrase = randomWords.join(' ');
       let encrypted = '';
+      let translated = '';
+
       for (let char of phrase) {
         encrypted += alienMap[char] || char;
+        translated += char;
       }
 
       playSound('encrypt-sound');
       document.getElementById("message").value = encrypted;
-      updateAlienDictionary(encrypted, phrase);
+      document.getElementById("result").innerHTML = `
+        <p><strong>Message en Alien :</strong> ${encrypted}</p>
+        <p><strong>Message en Français :</strong> ${translated}</p>`;
+
+      updateAlienDictionary(encrypted, translated);
     }
 
     function toggleTemporalMode() {
       const result = document.getElementById("result");
       result.classList.toggle("temporal-mode");
       playSound('temporal-sound');
-    }
-
-    function checkHints() {
-      const hintBox = document.querySelector(".hint");
-      if (encryptCount === 3) {
-        hintBox.innerText = "🧪 Indice débloqué : Le mot 'sus' n'est pas qu'une insulte...";
-      } else if (encryptCount === 7) {
-        hintBox.innerText = "👁️ Indice débloqué : Essaie de deviner le mot préféré d’un sigma fan de toilettes...";
-      } else if (encryptCount === 13) {
-        hintBox.innerText = "🌌 Indice débloqué : Le vrai alien regarde toujours en arrière...";
-      }
-    }
-
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Message copié dans le presse-papiers !');
-      }).catch(err => {
-        alert('Erreur lors de la copie : ' + err);
-      });
     }
   </script>
 
