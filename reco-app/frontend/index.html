@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recommandations</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>📢 Partage tes recommandations !</h1>
+
+  <form id="recoForm">
+    <input type="text" id="auteur" placeholder="Ton nom" required />
+    <select id="type">
+      <option value="film">Film</option>
+      <option value="musique">Musique</option>
+      <option value="série">Série</option>
+      <option value="autre">Autre</option>
+    </select>
+    <input type="text" id="titre" placeholder="Titre" required />
+    <textarea id="description" placeholder="Pourquoi tu le recommandes ?" required></textarea>
+    <button type="submit">Envoyer</button>
+  </form>
+
+  <div id="recoList"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
