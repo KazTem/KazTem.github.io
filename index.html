@@ -14,15 +14,15 @@
 
   .container {
     display: grid;
-    grid-template-columns: repeat(7, 150px);
-    grid-template-rows: repeat(7, 150px);
+    grid-template-columns: repeat(9, 150px);
+    grid-template-rows: repeat(9, 150px);
     gap: 10px;
     width: max-content;
   }
 
   .center-text {
-  grid-column: 4;
-  grid-row: 4;
+  grid-column: 5;
+  grid-row: 5;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -143,13 +143,15 @@
     // Ligne 3 (au-dessus)
     {row:3, col:0},{row:3, col:1},{row:3, col:2},{row:3, col:3},{row:3, col:4},{row:3, col:5},{row:3, col:6},{row:3, col:7},{row:3, col:8},
     // Ligne 4 (milieu) sauf centre
-    {row:4, col:0},{row:4, col:1},{row:4, col:2},{row:4, col:3},{row:4, col:5},{row:4, col:6},{row:4, col:7},{row:4, col:8},
+    {row:4, col:0},{row:4, col:1},{row:4, col:2},{row:4, col:3},{row:4, col:4},{row:4, col:5},{row:4, col:6},{row:4, col:7},{row:4, col:8},
     // Ligne 5 (en-dessous)
-    {row:5, col:0},{row:5, col:1},{row:5, col:2},{row:5, col:3},{row:5, col:4},{row:5, col:5},{row:5, col:6},{row:5, col:7},{row:5, col:8},
+    {row:5, col:0},{row:5, col:1},{row:5, col:2},{row:5, col:3},{row:5, col:4},{row:5, col:6},{row:5, col:7},{row:5, col:8},
     // Ligne 2 (plus haut)
-    {row:2, col:0},{row:2, col:1},{row:2, col:2},{row:2, col:3},{row:2, col:4},{row:2, col:5},{row:2, col:6},{row:2, col:7},{row:2, col:8},
+    
     // Ligne 6 (plus bas)
     {row:6, col:0},{row:6, col:1},{row:6, col:2},{row:6, col:3},{row:6, col:4},{row:6, col:5},{row:6, col:6},{row:6, col:7},{row:6, col:8},
+	// Ligne 7 (plus bas)
+    {row:7, col:0},{row:7, col:1},{row:7, col:2},{row:7, col:3},{row:7, col:4},{row:7, col:5},{row:7, col:6},{row:7, col:7},{row:7, col:8},
   ];
 
   // On ne prend que le nombre d'images dispo
