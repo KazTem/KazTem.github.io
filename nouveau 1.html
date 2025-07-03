@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Bah alors ?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #2e2e3f);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100vh;
+      overflow: hidden;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    .media-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      max-width: 1000px;
+    }
+
+    .media-item {
+      width: 120px;
+      height: 120px;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .media-item img,
+    .media-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .center-text {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 1rem;
+      backdrop-filter: blur(4px);
+      max-width: 700px;
+    }
+
+    .center-text h1 {
+      font-size: 2.2rem;
+      color: #ff6b6b;
+      margin-bottom: 0.5rem;
+    }
+
+    .center-text p {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      background: #ff6b6b;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #ff4c4c;
+    }
+
+    video::-webkit-media-controls {
+      display: initial !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ligne du haut -->
+  <div class="media-row">
+    <div class="media-item"><img src="700_FO25537003_ef1f12b7dd33680718217f83649e6fd4.jpg" alt=""></div>
+    <div class="media-item"><img src="20250703_194638.jpg" alt=""></div>
+    <div class="media-item"><img src="aaa.png" alt=""></div>
+    <div class="media-item"><img src="absolute_cinema.jpg" alt=""></div>
+    <div class="media-item"><img src="choqué.jpg" alt=""></div>
+    <div class="media-item"><video controls><source src="comment_ça_mon_reuf_billy.mp4" type="video/mp4"></video></div>
+    <div class="media-item"><img src="i_will_be_there_no_matter_what_mbappé.jpg" alt=""></div>
+    <div class="media-item"><img src="il_y_a_des_news_qui_donnent_le_smile_sardoche.jpg" alt=""></div>
+	<div class="media-item"><img src="rn_image_picker_lib_temp_8184d212-32e8-427d-8436-072940ba9a45.jpg" alt=""></div>
+	
+  </div>
+
+  <!-- Texte central -->
+  <div class="center-text">
+    <h1>Bah alors ? 😏</h1>
+    <p>T'es tombé pile là où il fallait. C'était prévu depuis le début...</p>
+    <a href="#" class="btn">Clique... si tu veux savoir la vérité</a>
+  </div>
+
+  <!-- Ligne du bas -->
+  <div class="media-row">
+    <div class="media-item"><img src="images-12.jpg" alt=""></div>
+    <div class="media-item"><img src="images-39.jpg" alt=""></div>
+    <div class="media-item"><img src="imbécile_va_lâche_ça_là_snapchat.jpg" alt=""></div>
+    <div class="media-item"><img src="let_him_cook_woody.png" alt=""></div>
+    <div class="media-item"><img src="quelle_belle_journée_0_soucis.jpg" alt=""></div>
+    <div class="media-item"><img src="sourire_et_main_sur_lépaule.jpg" alt=""></div>
+    <div class="media-item"><video controls><source src="ssstwitter.com_1694288574773.mp4" type="video/mp4"></video></div>
+    <div class="media-item"><img src="YAROHEUR.jpg" alt=""></div>
+    <div class="media-item"><img src="bap.png" alt=""></div>
+	<div class="media-item"><img src="Screenshot_20250703_214059_Instagram.jpg" alt=""></div>
+  </div>
+
+</body>
+</html>

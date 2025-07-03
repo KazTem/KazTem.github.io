@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Images autour du texte</title>
+<style>
+  body, html {
+    margin: 0; padding: 0; height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    background: #f0f0f0;
+    overflow: hidden; /* Pas de scroll */
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: repeat(7, 150px);
+    grid-template-rows: repeat(7, 150px);
+    gap: 10px;
+    width: max-content;
+  }
+
+  .center-text {
+  grid-column: 4;
+  grid-row: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  background: #fff;
+  border: 2px solid #333;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+
+  max-width: 280px;
+  white-space: normal;
+  word-wrap: break-word;
+  min-height: 120px;
+   /* glow */
+  box-shadow:
+    0 0 10px #ff00cc,
+    0 0 20px #ff00cc,
+    0 0 30px #ff00cc;
+
+  /* optional animation glow pulsation */
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow:
+      0 0 10px #ff00cc,
+      0 0 20px #ff00cc,
+      0 0 30px #ff00cc;
+  }
+  50% {
+    box-shadow:
+      0 0 15px #ff33dd,
+      0 0 25px #ff33dd,
+      0 0 40px #ff33dd;
+  }
+}
+
+	
+
+
+  .image {
+    width: 150px;
+    height: 150px;
+    border-radius: 15px;
+    object-fit: cover;
+    border: 3px solid #333;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="container">
+  <div class="center-text">Bah alors mon petit nathan ça allait se relaxer? 😏</div>
+  <!-- Images seront insérées ici -->
+</div>
+
+<script>
+  const container = document.getElementById('container');
+
+  const imagesUrls = [
+    "700_FO25537003_ef1f12b7dd33680718217f83649e6fd4.jpg",
+    "20250703_194638.jpg",
+    "absolute_cinema.jpg",
+    "choqué.jpg",
+    "i_will_be_there_no_matter_what_mbappé.jpg",
+    "il_y_a_des_news_qui_donnent_le_smile_sardoche.jpg",
+    "rn_image_picker_lib_temp_8184d212-32e8-427d-8436-072940ba9a45.jpg",
+	"Screenshot_20250703_214059_Instagram.jpg",
+    "images-12.jpg",
+    "images-39.jpg",
+	"comment_ça_mon_reuf_billy.mp4",
+    "imbécile_va_lâche_ça_là_snapchat.jpg",
+	"ssstwitter.com_1694288574773.mp4",
+    "let_him_cook_woody.png",
+    "aaa.png",
+    "quelle_belle_journée_0_soucis.jpg",
+    "sourire_et_main_sur_lépaule.jpg",
+    "YAROHEUR.jpg",
+    "bap.png",
+	"20250531_213123.jpg",
+	"20231222_072611.jpg",
+	"20230730_203004.jpg",
+	"Picsart_25-04-18_11-42-31-435.jpg",
+	"images-38.jpg",
+	"images-36.jpg",
+	"images-31.jpg",
+	"telechargement-3.jpg",
+	"images-19.jpg",
+	"ssstwitter.com_1741642592202.mp4",
+	"jpeux_ouuuuuuu_que_les_petits.jpg",
+	"le_ptit_que_tas_hagar_il_reviendra_un_jour.jpg",
+	"bisou_je_menvole.png",
+	"ça_y_est_nous_y_est.mp4",
+	"en_mode_enflure_tention_les_filles_.jpg",
+	"shrek_aux_toilettes.mp4",
+	"on_vous_a_volé_votre_vélo__pourtant_je_lai_bien_sécurisé_avec_le_cadenas.mp4",
+	"homme_bien_habillé_posé.jpg",
+	"lebron_james.mp4",
+	"homme_pris_en_flagrant_délit.jpg",
+	"merde_je_me_suis_cramé_tout_seul.jpeg",
+	"les_simpson_se_moquent.jpg",
+	"il_transpire_de_bz_calcul_maths.jpg",
+	"finalement_cest_qui_le_plus_con_maintenant__siphano.mp4",
+	"billy_relie_fils_électriques_among_us.jpg",
+	"singe_rio_de_janeiro.jpg",
+	"haaaaa.mp4",
+	"doigby_danse.mp4",
+    
+
+  ];
+
+  // Positions autour de la case centrale (4,4) en ordre pour entourer en contour
+  const positions = [
+    // Ligne 3 (au-dessus)
+    {row:3, col:0},{row:3, col:1},{row:3, col:2},{row:3, col:3},{row:3, col:4},{row:3, col:5},{row:3, col:6},{row:3, col:7},{row:3, col:8},
+    // Ligne 4 (milieu) sauf centre
+    {row:4, col:0},{row:4, col:1},{row:4, col:2},{row:4, col:3},{row:4, col:5},{row:4, col:6},{row:4, col:7},{row:4, col:8},
+    // Ligne 5 (en-dessous)
+    {row:5, col:0},{row:5, col:1},{row:5, col:2},{row:5, col:3},{row:5, col:4},{row:5, col:5},{row:5, col:6},{row:5, col:7},{row:5, col:8},
+    // Ligne 2 (plus haut)
+    {row:2, col:0},{row:2, col:1},{row:2, col:2},{row:2, col:3},{row:2, col:4},{row:2, col:5},{row:2, col:6},{row:2, col:7},{row:2, col:8},
+    // Ligne 6 (plus bas)
+    {row:6, col:0},{row:6, col:1},{row:6, col:2},{row:6, col:3},{row:6, col:4},{row:6, col:5},{row:6, col:6},{row:6, col:7},{row:6, col:8},
+  ];
+
+  // On ne prend que le nombre d'images dispo
+  const imagePositions = positions.slice(0, imagesUrls.length);
+  
+
+ function isVideo(filename) {
+  const videoExts = ['mp4', 'webm', 'ogg'];
+  const ext = filename.split('.').pop().toLowerCase();
+  return videoExts.includes(ext);
+}
+
+for(let i = 0; i < imagePositions.length; i++) {
+  const src = imagesUrls[i];
+  let element;
+  if(isVideo(src)) {
+    element = document.createElement('video');
+    element.src = src;
+    element.controls = true;
+    element.muted = false;
+    element.loop = false;
+    element.playsInline = true;
+  } else {
+    element = document.createElement('img');
+    element.src = src;
+  }
+  element.classList.add('image'); // on réutilise la même classe CSS (taille, bordure)
+
+  element.style.gridRow = imagePositions[i].row;
+  element.style.gridColumn = imagePositions[i].col;
+
+  container.appendChild(element);
+}
+
+</script>
+
+</body>
+</html>
